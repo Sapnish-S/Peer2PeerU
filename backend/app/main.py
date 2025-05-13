@@ -21,3 +21,12 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(ws_router) 
+@app.get("/")
+def root():
+    if not cursor:
+        raise HTTPException(status_code=500, detail="❌ Database connection failed (cursor is None)")
+    try:
+        cursor.execute("SELECT 1;")
+        return {"message": "✅ FastAPI is connected to Supabase!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"❌ Query failed: {str(e)}")
