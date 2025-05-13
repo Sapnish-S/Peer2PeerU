@@ -284,3 +284,47 @@ def get_user_name(student_id: int):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"firstName": user[0], "lastName": user[1]}
+# Submit or update a seller review
+@auth_router.post("/seller-review")
+def post_seller_review(
+    seller_id: int = Form(...),
+    reviewer_id: int = Form(...),
+    rating: int = Form(...),
+    comment: str = Form(...)
+):
+    if seller_id == reviewer_id:
+        raise HTTPException(status_code=400, detail="You cannot review yourself.")
+    
+    try:
+        cursor.execute("""
+            INSERT INTO Reviews (SellerID, ReviewerID, Rating, Comment)
+            VALUES (%s, %s, %s, %s)
+            ON CONFLICT (SellerID, ReviewerID)
+            DO UPDATE SET Rating = EXCLUDED.Rating, Comment = EXCLUDED.Comment, Timestamp = CURRENT_TIMESTAMP
+        """, (seller_id, reviewer_id, rating, comment))
+        conn.commit()
+        return {"message": "Review submitted"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Fetch all reviews for a seller
+@auth_router.get("/seller-reviews/{seller_id}")
+def get_seller_reviews(seller_id: int):
+    cursor.execute("""
+        SELECT r.Rating, r.Comment, r.Timestamp, u.FirstName, u.LastName
+        FROM Reviews r
+        JOIN Users u ON r.ReviewerID = u.StudentID
+        WHERE r.SellerID = %s
+        ORDER BY r.Timestamp DESC
+    """, (seller_id,))
+    rows = cursor.fetchall()
+    return [
+        {
+            "rating": row[0],
+            "comment": row[1],
+            "timestamp": row[2],
+            "reviewerName": f"{row[3]} {row[4]}"
+        }
+        for row in rows
+    ]

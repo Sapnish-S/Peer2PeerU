@@ -19,7 +19,9 @@ const ItemDetails = () => {
     // redirect to /messages/:itemId?to=sellerId
     navigate(`/messages/${item.itemId}?to=${item.sellerId}`);
   };
-
+  const handleSellerReviewClick= ()=>{
+    navigate(`/seller-review/${item.sellerId}`);
+  }
   if (!item) return <p style={{ color: "white" }}>Loading item...</p>;
 
   return (
@@ -38,6 +40,9 @@ const ItemDetails = () => {
 
       <button className="Message-seller-button" onClick={handleMessageClick}>
         Message Seller
+      </button>
+      <button onClick={handleSellerReviewClick} className="review-button">
+        Seller Reviews
       </button>
     </div>
   );

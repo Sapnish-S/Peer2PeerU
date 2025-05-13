@@ -26,6 +26,7 @@ CREATE TABLE USERS(
     PrimaryMajor VARCHAR(100),
     SecondaryMajor VARCHAR(100),
     Bio Text,
+    password VARCHAR(255),
 	CONSTRAINT fk_university FOREIGN KEY (UniversityID) REFERENCES universities(UniversityID),
 	CONSTRAINT unique_email UNIQUE (Email),
 	CONSTRAINT unique_university_student UNIQUE (UniversityID, UniversityStudentID)
@@ -68,15 +69,15 @@ CREATE TABLE Transactions (
 );
 
 CREATE TABLE Reviews (
-    ReviewID SERIAL PRIMARY KEY,
-    ItemID INT NOT NULL,
-    ReviewerID INT,
-    Rating INT NOT NULL CHECK (Rating BETWEEN 1 AND 5),
-    Comment TEXT,
-    reviewDate DATE NOT NULL DEFAULT CURRENT_DATE,
-    FOREIGN KEY (ItemID) REFERENCES Items(ItemID),
-    FOREIGN KEY (ReviewerID) REFERENCES Users(StudentID)
+  ReviewID SERIAL PRIMARY KEY,
+  SellerID INT REFERENCES Users(StudentID) ON DELETE CASCADE,
+  ReviewerID INT REFERENCES Users(StudentID) ON DELETE CASCADE,
+  Rating INT CHECK (Rating BETWEEN 1 AND 5),
+  Comment TEXT,
+  Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT unique_review UNIQUE (SellerID, ReviewerID)
 );
+
 
 CREATE TABLE Messages (
   MessageID SERIAL PRIMARY KEY,

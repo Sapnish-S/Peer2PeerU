@@ -11,6 +11,7 @@ import ProtectedRoute from './ProtectedRoute';
 import ItemDetails from './pages/ItemDetails/ItemDetails';
 import Search from './pages/Search/Search';
 import MessagesPage from './component/MessagePage';
+import SellerReview from './component/SellerReview/SellerReview';
 function App() {
   return (
     <Router>
@@ -69,6 +70,11 @@ function App() {
               </ProtectedRoute>
           }
           />
+          <Route path="/seller-review/:sellerId" 
+          element={<ProtectedRoute>
+            <SellerReview />
+            </ProtectedRoute>} />
+
         </Route>
       </Routes>
     </Router>
