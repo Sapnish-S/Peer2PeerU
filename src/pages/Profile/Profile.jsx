@@ -43,15 +43,26 @@ const Profile = () => {
   };
 
   const handleSave = () => {
-    axios.put(`${API_BASE}/profile/${studentId}`, user)
-      .then(() => {
-        setIsEditing(false);
-        setError(null);
-      })
-      .catch(err => {
-        console.error("Save failed:", err);
-        setError("Something went wrong while saving!");
-      });
+    const payload = {
+      contact: user.contact || "",
+      primaryMajor: user.primaryMajor || "",
+      secondaryMajor: user.secondaryMajor || "",
+      bio: user.bio || ""
+    };
+
+    axios.put(`${API_BASE}/profile/${studentId}`, payload, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(() => {
+      setIsEditing(false);
+      setError(null);
+    })
+    .catch(err => {
+      console.error("Save failed:", err);
+      setError("Something went wrong while saving!");
+    });
   };
 
   const handleImageChange = (e) => {
@@ -97,8 +108,6 @@ const Profile = () => {
 
       {isEditing ? (
         <>
-          <input type="text" name="name" value={user.name || ""} onChange={handleChange} placeholder="Full Name" />
-          <input type="email" name="email" value={user.email || ""} onChange={handleChange} placeholder="Email" />
           <input type="text" name="contact" value={user.contact || ""} onChange={handleChange} placeholder="Contact Number" />
           <input type="text" name="primaryMajor" value={user.primaryMajor || ""} onChange={handleChange} placeholder="Primary Major" />
           <input type="text" name="secondaryMajor" value={user.secondaryMajor || ""} onChange={handleChange} placeholder="Secondary Major" />
@@ -111,7 +120,7 @@ const Profile = () => {
         </>
       ) : (
         <>
-          <h1>{user.name}</h1>
+          <h1>{user.firstName} {user.lastName}</h1>
           <div className="profile-info">
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Contact:</strong> {user.contact}</p>
