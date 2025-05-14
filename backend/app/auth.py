@@ -194,6 +194,7 @@ def get_categories():
         rows = cursor.fetchall()
         return [{"CategoryID": row[0], "CategoryName": row[1]} for row in rows]
     except Exception as e:
+        print("Error/categories", e)
         raise HTTPException(status_code=500, detail="Failed to fetch categories")
 
 # Search
