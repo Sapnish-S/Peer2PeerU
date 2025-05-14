@@ -8,6 +8,7 @@ const MessengerLayout = ({ children }) => {
   const [studentId, setStudentId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const sid = localStorage.getItem('studentId');
@@ -19,7 +20,7 @@ const MessengerLayout = ({ children }) => {
 
     const fetchConversations = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/conversations/${studentId}`);
+        const res = await axios.get(`${API_BASE}/conversations/${studentId}`);
         setConversations(res.data);
       } catch (err) {
         console.error('Failed to load conversations', err);
@@ -28,7 +29,7 @@ const MessengerLayout = ({ children }) => {
 
     const timeout = setTimeout(fetchConversations, 100);
     return () => clearTimeout(timeout);
-  }, [studentId]);
+  }, [studentId, API_BASE]);
 
   const openChat = (itemId, otherUserId) => {
     navigate(`/messages/${itemId}?to=${otherUserId}`);

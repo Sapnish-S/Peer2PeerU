@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
-import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate= useNavigate();
+  const navigate = useNavigate();
+  const API_BASE = import.meta.env.VITE_API_URL;
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8000/', {
+
+    axios.post(`${API_BASE}/`, {
       email: email,
       password: password
     })
@@ -28,7 +30,6 @@ const Login = () => {
 
   return (
     <div className="login-page-container">
-     
       <div className="login-image-section">
         <div className="logo">
           <img src="/Peer2Peer2.png" alt="logo" className="logo-img" />
@@ -36,7 +37,6 @@ const Login = () => {
         <img src="/coverweb.png" alt="Buy and Sell" className="login-image" />
       </div>
 
-      
       <div className="login-card">
         <h1 className="login-heading">Login</h1>
         <form onSubmit={handleSubmit} className="login-form">
@@ -50,7 +50,9 @@ const Login = () => {
             placeholder="Enter your university email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
+
           <label htmlFor="password" className="login-label">
             Password
           </label>
@@ -61,11 +63,19 @@ const Login = () => {
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          <button type="submit" className="login-button" >
+
+          <button type="submit" className="login-button">
             Submit
           </button>
-          <p className="login-text"> <Link to="/register" className="register-link">Don't have an account? Register</Link></p> <p className="forgot-password">Forgot Password? </p>
+
+          <p className="login-text">
+            <Link to="/register" className="register-link">
+              Don't have an account? Register
+            </Link>
+          </p>
+          <p className="forgot-password">Forgot Password?</p>
         </form>
       </div>
     </div>

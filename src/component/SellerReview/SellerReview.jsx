@@ -9,12 +9,12 @@ const SellerReview = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(true);
-
+  const API_BASE = import.meta.env.VITE_API_URL;
   const studentId = localStorage.getItem("studentId");
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/seller-reviews/${sellerId}`);
+      const res = await axios.get(`${API_BASE}/seller-reviews/${sellerId}`);
       setReviews(res.data);
     } catch (err) {
       console.error("Failed to fetch seller reviews:", err);
@@ -36,7 +36,7 @@ const SellerReview = () => {
       formData.append("rating", rating);
       formData.append("comment", comment);
 
-      await axios.post("http://localhost:8000/seller-review", formData);
+      await axios.post(`${API_BASE}/seller-review`, formData); // ✅ FIXED here
       fetchReviews();
       setComment('');
     } catch (err) {

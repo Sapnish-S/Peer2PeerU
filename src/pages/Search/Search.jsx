@@ -11,9 +11,9 @@ const Search = () => {
 
   useEffect(() => {
     if (query.trim()) {
-      axios.get(`http://localhost:8000/search?query=${query}`)
+      axios.get(`${import.meta.env.VITE_API_URL}/search?query=${encodeURIComponent(query)}`)
         .then(res => setResults(res.data))
-        .catch(err => console.error("Search failed", err));
+        .catch(err => console.error("Search failed:", err));
     }
   }, [query]);
 
@@ -24,8 +24,12 @@ const Search = () => {
           <Link to={`/item/${item.itemId}`} key={item.itemId} className="item-card-link">
             <div className="item-card">
               <img
-                src={`http://localhost:8000/item-image/${item.itemId}`}
+                src={`${import.meta.env.VITE_API_URL}/item-image/${item.itemId}`}
                 alt={item.title}
+                onError={(e) => {
+                  e.target.src = '/loading.png';
+                  e.target.alt = 'Image not found';
+                }}
               />
               <h3>{item.title}</h3>
               <p>{item.condition}</p>

@@ -12,8 +12,8 @@ const Profile = () => {
   const [error, setError] = useState(null);
 
   const { studentId } = useParams();
+  const API_BASE = import.meta.env.VITE_API_URL;
 
-  // Fetch profile data and image
   useEffect(() => {
     const id = studentId || localStorage.getItem("studentId");
     if (!id) {
@@ -22,7 +22,7 @@ const Profile = () => {
       return;
     }
 
-    axios.get(`http://localhost:8000/profile/${id}`)
+    axios.get(`${API_BASE}/profile/${id}`)
       .then(res => {
         setUser(res.data);
         setError(null);
@@ -33,17 +33,17 @@ const Profile = () => {
       })
       .finally(() => setLoading(false));
 
-    axios.get(`http://localhost:8000/profile-image/${id}`, { responseType: 'blob' })
+    axios.get(`${API_BASE}/profile-image/${id}`, { responseType: 'blob' })
       .then(res => setProfilePreview(URL.createObjectURL(res.data)))
       .catch(() => setProfilePreview(null));
-  }, [studentId]);
+  }, [studentId, API_BASE]);
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleSave = () => {
-    axios.put(`http://localhost:8000/profile/${studentId}`, user)
+    axios.put(`${API_BASE}/profile/${studentId}`, user)
       .then(() => {
         setIsEditing(false);
         setError(null);
@@ -66,7 +66,7 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('file', selectedImage);
 
-    axios.post(`http://localhost:8000/upload-profile-image/${studentId}`, formData)
+    axios.post(`${API_BASE}/upload-profile-image/${studentId}`, formData)
       .then(() => setError(null))
       .catch(() => setError('Image upload failed.'));
   };
@@ -76,7 +76,6 @@ const Profile = () => {
     window.location.href = "/";
   };
 
-  // Loading or error states
   if (loading) return <div>Loading profile...</div>;
 
   if (error) return (

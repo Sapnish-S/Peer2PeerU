@@ -20,6 +20,9 @@ const Chatbox = () => {
   const ws = useRef(null);
   const chatEndRef = useRef(null);
 
+  const API_BASE = import.meta.env.VITE_API_URL;
+  const WS_BASE = API_BASE.replace('https', 'wss');
+
   useEffect(() => {
     if (!receiverId || isNaN(receiverId)) {
       navigate("/home");
@@ -30,9 +33,9 @@ const Chatbox = () => {
     const fetchData = async () => {
       try {
         const [itemRes, senderRes, receiverRes] = await Promise.all([
-          axios.get(`http://localhost:8000/item/${itemId}`),
-          axios.get(`http://localhost:8000/user/${senderId}`),
-          axios.get(`http://localhost:8000/user/${receiverId}`),
+          axios.get(`${API_BASE}/item/${itemId}`),
+          axios.get(`${API_BASE}/user/${senderId}`),
+          axios.get(`${API_BASE}/user/${receiverId}`),
         ]);
         setItem(itemRes.data);
         setSenderName(`${senderRes.data.firstName} ${senderRes.data.lastName}`);
@@ -43,21 +46,21 @@ const Chatbox = () => {
     };
 
     if (itemId && senderId && receiverId) fetchData();
-  }, [itemId, senderId, receiverId]);
+  }, [API_BASE, itemId, senderId, receiverId]);
 
   useEffect(() => {
     if (itemId && senderId && receiverId) {
       axios
-        .get(`http://localhost:8000/messages/item/${itemId}?user1=${senderId}&user2=${receiverId}`)
+        .get(`${API_BASE}/messages/item/${itemId}?user1=${senderId}&user2=${receiverId}`)
         .then(res => setMessages(res.data))
         .catch(err => console.error("Failed to load messages:", err));
     }
-  }, [itemId, senderId, receiverId]);
+  }, [API_BASE, itemId, senderId, receiverId]);
 
   useEffect(() => {
     if (!itemId || !senderId || !receiverId) return;
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/${itemId}/${senderId}`);
+    const socket = new WebSocket(`${WS_BASE}/ws/${itemId}/${senderId}`);
     ws.current = socket;
 
     socket.onopen = () => console.log("WebSocket connected");
@@ -69,7 +72,7 @@ const Chatbox = () => {
     socket.onclose = () => console.warn("WebSocket closed");
 
     return () => socket.close();
-  }, [itemId, senderId, receiverId]);
+  }, [WS_BASE, itemId, senderId, receiverId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });

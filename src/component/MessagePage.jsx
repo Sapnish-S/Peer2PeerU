@@ -8,9 +8,9 @@ const MessagesPage = () => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const studentId = localStorage.getItem("studentId");
   const navigate = useNavigate();
-
+  const API_BASE = import.meta.env.VITE_API_URL;
   useEffect(() => {
-    axios.get(`http://localhost:8000/conversations/${studentId}`)
+    axios.get(`${API_BASE}/conversations/${studentId}`)
       .then(res => {
         const conversations = res.data;
         if (conversations.length > 0) {

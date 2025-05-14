@@ -9,10 +9,11 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const studentId = localStorage.getItem("studentId");
+  const API_BASE = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (studentId) {
-      fetch(`http://localhost:8000/profile-image/${studentId}`)
+      fetch(`${API_BASE}/profile-image/${studentId}`)
         .then(res => res.blob())
         .then(blob => {
           const url = URL.createObjectURL(blob);
@@ -20,7 +21,7 @@ const Navbar = () => {
         })
         .catch(() => setProfileImg(null));
     }
-  }, [studentId]);
+  }, [studentId, API_BASE]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -36,7 +37,9 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Link to={`/home`}><img src="/Peer2Peer2.png" alt="Peer2PeerU Logo" className="navbar-logo-img" /></Link>
+        <Link to={`/home`}>
+          <img src="/Peer2Peer2.png" alt="Peer2PeerU Logo" className="navbar-logo-img" />
+        </Link>
         <h1 className="navbar-logo-text">Peer2PeerU</h1>
       </div>
 
@@ -49,9 +52,7 @@ const Navbar = () => {
       <div className={`navbar-right ${isMenuOpen ? 'open' : ''}`}>
         <ul className="navbar-links">
           <li><Link to="/about">About Us</Link></li>
-          <li><Link to="/messages" className="nav-link">
-           Messages
-          </Link></li>
+          <li><Link to="/messages">Messages</Link></li>
           <li><Link to="/Listing">List An Item</Link></li>
           <li className="navbar-search">
             <input
