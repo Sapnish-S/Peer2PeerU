@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query
 from fastapi.responses import Response, StreamingResponse
 from passlib.context import CryptContext
-from app.schemas import RegisterRequest, LoginRequest, ProfileUpdate, MessageCreate, MessageResponse, ConversationResponse
+from app.schemas import RegisterRequest, LoginRequest, ProfileUpdate, MessageCreate, MessageResponse, ConversationResponse, Notification
+from typing import List
 from app.database import conn, cursor
 import psycopg2
 import base64
@@ -328,3 +329,41 @@ def get_seller_reviews(seller_id: int):
         }
         for row in rows
     ]
+@auth_router.get("/notifications/{student_id}", response_model=List[Notification])
+def get_notifications(student_id: int):
+    try:
+        cursor.execute("""
+            SELECT NotificationID, ReceiverID, MessageID, NotificationText, IsRead, CreatedAt
+            FROM Notifications
+            WHERE ReceiverID = %s
+            ORDER BY CreatedAt DESC
+        """, (student_id,))
+        rows = cursor.fetchall()
+        return [
+            {
+                "notification_id": r[0],
+                "receiver_id": r[1],
+                "message_id": r[2],
+                "notification_text": r[3],
+                "is_read": r[4],
+                "created_at": str(r[5])[:19]  # stringified
+            }
+            for r in rows
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error fetching notifications")
+
+# ✅PATCH: Mark a notification as read
+@auth_router.patch("/notifications/mark-read/{notification_id}")
+def mark_notification_as_read(notification_id: int):
+    try:
+        cursor.execute("""
+            UPDATE Notifications SET IsRead = TRUE WHERE NotificationID = %s
+        """, (notification_id,))
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        conn.commit()
+        return {"message": "Notification marked as read"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Failed to mark notification as read")

@@ -1,5 +1,6 @@
-
 from pydantic import BaseModel
+from typing import List
+from datetime import datetime
 
 class RegisterRequest(BaseModel):
     firstname: str
@@ -37,3 +38,11 @@ class ConversationResponse(BaseModel):
     itemTitle: str
     otherUserId: int
     otherUserName: str
+
+class Notification(BaseModel):
+    notification_id: int
+    receiver_id: int
+    message_id: int
+    notification_text: str
+    is_read: bool
+    created_at: datetime

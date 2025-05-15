@@ -87,3 +87,13 @@ CREATE TABLE Messages (
   Content TEXT NOT NULL,
   Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE Notifications (
+    NotificationID SERIAL PRIMARY KEY,
+    ReceiverID INT NOT NULL,
+    MessageID INT NOT NULL,
+    NotificationText TEXT NOT NULL,
+    IsRead BOOLEAN DEFAULT FALSE,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ReceiverID) REFERENCES Users(StudentID),
+    FOREIGN KEY (MessageID) REFERENCES Messages(MessageID)
+);
