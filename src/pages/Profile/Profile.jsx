@@ -43,6 +43,7 @@ const Profile = () => {
   };
 
   const handleSave = () => {
+    const id = studentId || localStorage.getItem("studentId");
     const payload = {
       contact: user.contact || "",
       primaryMajor: user.primaryMajor || "",
@@ -50,7 +51,7 @@ const Profile = () => {
       bio: user.bio || ""
     };
 
-    axios.put(`${API_BASE}/profile/${studentId}`, payload, {
+    axios.put(`${API_BASE}/profile/${id}`, payload, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -72,12 +73,13 @@ const Profile = () => {
   };
 
   const handleImageUpload = () => {
+    const id = studentId || localStorage.getItem("studentId");
     if (!selectedImage) return;
 
     const formData = new FormData();
     formData.append('file', selectedImage);
 
-    axios.post(`${API_BASE}/upload-profile-image/${studentId}`, formData)
+    axios.post(`${API_BASE}/upload-profile-image/${id}`, formData)
       .then(() => setError(null))
       .catch(() => setError('Image upload failed.'));
   };
